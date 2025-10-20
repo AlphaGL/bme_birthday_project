@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BME Birthdays</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            flex: 1;
+            flex-wrap: wrap;
+        }
+
+        .search-box, .filter-select {
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box:focus, .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102,126,234,0.4);
+        }
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .student-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .student-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 4px solid white;
+            object-fit: cover;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .student-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .student-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .student-body {
+            padding: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: #555;
+        }
+
+        .info-row strong {
+            color: #333;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .btn-edit {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+
+        .page-link {
+            padding: 10px 15px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .page-link:hover, .page-link.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .messages {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .empty-state .icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .students-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>🎂 BME Birthday Admin</h1>
+        <div class="user-info">
+            <span>Welcome, {{ user.username }}!</span>
+            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <h3>{{ total_students }}</h3>
+                    <p>Total Students</p>
+                </div>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="messages">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="controls">
+            <div class="search-filter">
+                <form method="GET" style="display: contents;">
+                    <input type="text" name="search" class="search-box" placeholder="🔍 Search by name..." value="{{ search|default:'' }}">
+                    <select name="month" class="filter-select" onchange="this.form.submit()">
+                        <option value="">All Months</option>
+                        <option value="01" {% if month_filter == '01' %}selected{% endif %}>January</option>
+                        <option value="02" {% if month_filter == '02' %}selected{% endif %}>February</option>
+                        <option value="03" {% if month_filter == '03' %}selected{% endif %}>March</option>
+                        <option value="04" {% if month_filter == '04' %}selected{% endif %}>April</option>
+                        <option value="05" {% if month_filter == '05' %}selected{% endif %}>May</option>
+                        <option value="06" {% if month_filter == '06' %}selected{% endif %}>June</option>
+                        <option value="07" {% if month_filter == '07' %}selected{% endif %}>July</option>
+                        <option value="08" {% if month_filter == '08' %}selected{% endif %}>August</option>
+                        <option value="09" {% if month_filter == '09' %}selected{% endif %}>September</option>
+                        <option value="10" {% if month_filter == '10' %}selected{% endif %}>October</option>
+                        <option value="11" {% if month_filter == '11' %}selected{% endif %}>November</option>
+                        <option value="12" {% if month_filter == '12' %}selected{% endif %}>December</option>
+                    </select>
+                </form>
+            </div>
+            <a href="{% url 'admin_create' %}" class="add-btn">➕ Add Student</a>
+        </div>
+
+        {% if students %}
+        <div class="students-grid">
+            {% for student in students %}
+            <div class="student-card">
+                <div class="student-header">
+                    <div class="student-avatar">
+                        {% if student.profile_picture %}
+                            <img src="{{ student.profile_picture.url }}" alt="{{ student.full_name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            🎂
+                        {% endif %}
+                    </div>
+                    <h3>{{ student.full_name }}</h3>
+                    <p>🎉 {{ student.birthday_display }}</p>
+                </div>
+                <div class="student-body">
+                    <div class="info-row">
+                        <span>📱</span>
+                        <span>{{ student.phone_number }}</span>
+                    </div>
+                    {% if student.email %}
+                    <div class="info-row">
+                        <span>✉️</span>
+                        <span>{{ student.email }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="info-row">
+                        <span>🎓</span>
+                        <span>{{ student.get_level_display }}</span>
+                    </div>
+                    {% if student.alias %}
+                    <div class="info-row">
+                        <span>😼</span>
+                        <span>{{ student.alias }}</span>
+                    </div>
+                    {% endif %}
+                    {% if student.held_office %}
+                    <div class="info-row">
+                        <span class="badge">🏆 {{ student.office_position }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="actions">
+                        <a href="{% url 'admin_update' student.pk %}" class="btn btn-edit">✏️ Edit</a>
+                        <a href="{% url 'admin_delete' student.pk %}" class="btn btn-delete">🗑️ Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if students.has_other_pages %}
+        <div class="pagination">
+            {% if students.has_previous %}
+                <a href="?page=1{% if search %}&search={{ search }}{% endif %}{% if month_filter %}&month={{ month_filter }}{% endif %}" class="page-link">First</a>
+                <a href="?page={{ students.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if month_filter %}&month={{ month_filter }}{% endif %}" class="page-link">Previous</a>
+            {% endif %}
+
+            <span class="page-link active">Page {{ students.number }} of {{ students.paginator.num_pages }}</span>
+
+            {% if students.has_next %}
+                <a href="?page={{ students.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if month_filter %}&month={{ month_filter }}{% endif %}" class="page-link">Next</a>
+                <a href="?page={{ students.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if month_filter %}&month={{ month_filter }}{% endif %}" class="page-link">Last</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">🎂</div>
+            <h3>No Students Found</h3>
+            <p>Start by adding your first student's birthday!</p>
+            <a href="{% url 'admin_create' %}" class="add-btn" style="margin-top: 20px;">➕ Add Student</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
